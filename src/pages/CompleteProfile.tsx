@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import api from "@/services/api";
 import FitnessCard from "@/components/FitnessCard";
-
+import {updateProfile} from "@/services/userService";
 const fitnessGoalOptions = ["Lose Weight", "Build Muscle", "Improve Cardio", "Increase Flexibility", "Stay Active", "Train for Event"];
 const workoutOptions = ["Running", "Weight Training", "Yoga", "Swimming", "Cycling", "HIIT", "Pilates", "Walking"];
 
@@ -42,15 +41,67 @@ const CompleteProfile: React.FC = () => {
         weight: Number(form.weight),
         targetWeight: Number(form.targetWeight),
       };
-      await api.put("/api/users/profile", payload);
-      updateUser({ ...payload, profileCompleted: true });
-      navigate("/dashboard");
-    } catch {
-      alert("Failed to update profile. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = await updateProfile(payload);
+  updateUser({
+      ...data.user,
+      profileCompleted: data.profileCompleted,
+    });     
+    navigate("/dashboard-summary");
+    } catch (err: any) {
+    console.log(
+      "Profile update error:",
+      err.response?.data || err.message
+    );
+    alert(err.response?.data?.error || "Failed to update profile.");
+  } finally {
+    setLoading(false);
+  }
+};
+// const handleSubmit = async (e: React.FormEvent) => {
+//   e.preventDefault();
+//   setLoading(true);
+
+//   try {
+//     const payload = {
+//       ...form,
+//       age: Number(form.age),
+//       height: Number(form.height),
+//       weight: Number(form.weight),
+//       targetWeight: Number(form.targetWeight),
+//     };
+
+//     const res = await api.put("/api/users/profile", payload);
+
+//     updateUser({
+//       ...res.data.user,
+//       profileCompleted: res.data.profileCompleted,
+//     });
+
+//     navigate("/dashboard");
+//   } catch (err: any) {
+//     console.log("Profile update error:", err.response?.data || err.message);
+//     alert(err.response?.data?.error || "Failed to update profile.");
+//   } finally {
+//     setLoading(false);
+//   }
+// }; 
+
+// try {
+//   const data = await updateProfile(formData);
+
+//   updateUser({
+//     ...data.user,
+//     profileCompleted: data.profileCompleted,
+//   });
+
+//   navigate("/dashboard");
+// } catch (err: any) {
+//   console.log("Profile update error:", err.response?.data || err.message);
+//   alert(err.response?.data?.error || "Failed to update profile.");
+// } finally {
+//   setLoading(false);
+// };
+
 
   const inputClass = "w-full rounded-xl border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 transition-theme";
 

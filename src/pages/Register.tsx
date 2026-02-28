@@ -1,7 +1,38 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+
+// const Register: React.FC = () => {
+//   const [name, setName] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [confirmPassword, setConfirmPassword] = useState("");
+//   const [error, setError] = useState("");
+//   const [loading, setLoading] = useState(false);
+//   const { register } = useAuth();
+//   const { theme, toggleTheme } = useTheme();
+//   const navigate = useNavigate();
+
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setError("");
+//     if (password !== confirmPassword) {
+//       setError("Passwords do not match");
+//       return;
+//     }
+//     setLoading(true);
+//     try {
+//       await register(name, email, password);
+//       navigate("/complete-profile");
+//     } catch (err: any) {
+//   setError(err.message || "Registration failed.");
+// }
+//  finally {
+//       setLoading(false);
+//     }
+
+//   };
 
 const Register: React.FC = () => {
   const [name, setName] = useState("");
@@ -10,23 +41,32 @@ const Register: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
   const { register } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setError("");
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
+
     setLoading(true);
+
     try {
-      await register(name, email, password);
-      navigate("/complete-profile");
+      await register(name.trim(), email.trim(), password);
+      setError("");
+      navigate("/complete-profile", { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed.");
+      setError(err?.message || "Registrationn failed.");
     } finally {
       setLoading(false);
     }

@@ -19,7 +19,7 @@ const Login: React.FC = () => {
     try {
       await login(email, password);
       // AuthContext stores user — App.tsx handles redirect based on profileCompleted
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed. Please try again.");
     } finally {
