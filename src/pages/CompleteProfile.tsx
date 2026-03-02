@@ -52,7 +52,7 @@ const CompleteProfile: React.FC = () => {
       "Profile update error:",
       err.response?.data || err.message
     );
-    alert(err.response?.data?.error || "Failed to update profile.");
+    // alert(err.response?.data?.error || "Failed to update profile.");
   } finally {
     setLoading(false);
   }

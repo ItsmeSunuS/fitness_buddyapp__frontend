@@ -1,21 +1,35 @@
 import axios from "axios";
 
 // Base API instance — point this to your Express backend
+// const api = axios.create({
+//   baseURL: "http://localhost:5050",
+//   headers: { "Content-Type": "application/json" },
+// });
+
+// api.interceptors.request.use((config) => {
+//   const token = localStorage.getItem("fitness-token");
+
+//   if (token) {
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+
+//   return config;
+
+// });
+
 const api = axios.create({
   baseURL: "http://localhost:5050",
-  headers: { "Content-Type": "application/json" },
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-
+  const token = localStorage.getItem("fitness-token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
-
 });
+
+
 
 // Attach JWT token to every request automatically
 api.interceptors.request.use((config) => {

@@ -57,36 +57,39 @@ interface ProtectedRouteProps {
 // };
 // export default ProtectedRoute;
 
-
-
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { isAuthenticated, isAdmin, user } = useAuth();
+  const { isAuthenticated, isAdmin, user, loading } = useAuth();
   const location = useLocation();
 
-  // Not logged in
-if (!isAuthenticated) {
-  return <Navigate to="/login" replace />;
-}
+  // 1️⃣ Wait for auth to finish loading
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
-// Admin-only protection
-if (adminOnly && !isAdmin) {
-  return <Navigate to="/dashboard" replace />;
-}
+  // 2️⃣ Not logged in
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-// Profile completion for normal users only
-if (
-  !isAdmin &&
-  user &&
-  !user.profileCompleted &&
-  location.pathname !== "/complete-profile"
-) {
-  return <Navigate to="/complete-profile" replace />;
-}
+  // 3️⃣ Admin only
+  if (adminOnly && !isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
-// Prevent admin accessing normal dashboard
-if (isAdmin && location.pathname === "/dashboard") {
-  return <Navigate to="/admin" replace />;
-}
-return <>{children}</>;
+  // 4️⃣ Profile completion (normal users only)
+  if (
+    !isAdmin &&
+    user &&
+    !user.profileCompleted &&
+    location.pathname !== "/complete-profile"
+  ) {
+    return <Navigate to="/complete-profile" replace />;
+  }
+
+  return <>{children}</>;
 };
- export default ProtectedRoute;
+export default ProtectedRoute;

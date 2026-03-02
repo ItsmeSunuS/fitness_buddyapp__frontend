@@ -24,7 +24,7 @@ const App = () => (
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Index />} />
-          {/* <Route path="/"element={<ProtectedRoute> <RoleRedirect /></ProtectedRoute>}/> */}
+          <Route path="/RoleRedirect"element={<ProtectedRoute> <RoleRedirect /></ProtectedRoute>}/>
 <Route path="/login" element={<Login />} />
 <Route path="/register" element={<Register />} />
 <Route path="/complete-profile" element={<CompleteProfile />} />
