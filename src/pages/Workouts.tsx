@@ -15,12 +15,11 @@ import {
 
 interface Workout {
   id: string;
-  type: string;
+  workout_type: string;
   duration: number;
-  caloriesBurned: number;
-  date: string;
+  calories_burned: number;
+  created_at: string;
 }
-
 const workoutTypes = ["Running", "Weight Training", "Yoga", "Swimming", "Cycling", "HIIT", "Walking", "Pilates"];
 
 const PIE_COLORS = [
@@ -30,47 +29,52 @@ const PIE_COLORS = [
 ];
 
 const Workouts: React.FC = () => {
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
-  const [form, setForm] = useState({ type: "Running", duration: "", caloriesBurned: "" });
-  const [loading, setLoading] = useState(false);
+const [workouts, setWorkouts] = useState<Workout[]>([]);
+const [form, setForm] = useState({ workout_type: "Running", duration: "", caloriesBurned: "" });  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const fetchWorkouts = async () => {
-      try {
-        const res = await api.get("/api/workouts");
-        //setWorkouts(res.data);
-      } catch {
-        setWorkouts([
-          { id: "1", type: "Running", duration: 30, caloriesBurned: 350, date: new Date().toISOString() },
-          { id: "2", type: "Weight Training", duration: 45, caloriesBurned: 280, date: new Date(Date.now() - 86400000).toISOString() },
-          { id: "3", type: "Yoga", duration: 60, caloriesBurned: 180, date: new Date(Date.now() - 172800000).toISOString() },
-          { id: "4", type: "HIIT", duration: 25, caloriesBurned: 400, date: new Date(Date.now() - 259200000).toISOString() },
-          { id: "5", type: "Cycling", duration: 50, caloriesBurned: 320, date: new Date(Date.now() - 345600000).toISOString() },
-        ]);
-      }
-    };
-    fetchWorkouts();
-  }, []);
+  fetchWorkouts();
+}, []);
 
-  const handleAdd = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    const newWorkout = {
-      type: form.type,
-      duration: Number(form.duration),
-      caloriesBurned: Number(form.caloriesBurned),
-    };
-    try {
-      const res = await api.post("/api/workouts/add", newWorkout);
-      setWorkouts([res.data, ...workouts]);
-    } catch {
-      setWorkouts([{ id: Date.now().toString(), ...newWorkout, date: new Date().toISOString() }, ...workouts]);
-    }
-    setForm({ type: "Running", duration: "", caloriesBurned: "" });
-    setLoading(false);
+const fetchWorkouts = async () => {
+  try {
+    const res = await api.get("/api/workouts");
+    setWorkouts(res.data);
+  } catch (error) {
+    console.error("Error fetching workouts:", error);
+  }
+};
+
+const handleAdd = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+
+  const newWorkout = {
+    workoutType: form.workout_type,
+    duration: Number(form.duration),
+    caloriesBurned: Number(form.caloriesBurned),
+    distance: 0
   };
 
-  const totalCalories = workouts.reduce((sum, w) => sum + w.caloriesBurned, 0);
+  try {
+    await api.post("/api/workouts/add", newWorkout);
+
+    // reload workouts after adding
+    await fetchWorkouts();
+
+  } catch (error) {
+    console.error("Error adding workout:", error);
+  }
+
+  setForm({
+    workout_type: "Running",
+    duration: "",
+    caloriesBurned: ""
+  });
+
+  setLoading(false);
+};
+  const totalCalories = workouts.reduce((sum, w) => sum + w.calories_burned, 0);
   const totalDuration = workouts.reduce((sum, w) => sum + w.duration, 0);
   const weeklyGoal = 300;
   const weeklyProgress = Math.min(100, (totalDuration / weeklyGoal) * 100);
@@ -78,10 +82,10 @@ const Workouts: React.FC = () => {
   // Prepare chart data: calories per workout type
   const typeMap: Record<string, { calories: number; duration: number; count: number }> = {};
   workouts.forEach((w) => {
-    if (!typeMap[w.type]) typeMap[w.type] = { calories: 0, duration: 0, count: 0 };
-    typeMap[w.type].calories += w.caloriesBurned;
-    typeMap[w.type].duration += w.duration;
-    typeMap[w.type].count += 1;
+    if (!typeMap[w.workout_type]) typeMap[w.workout_type] = { calories: 0, duration: 0, count: 0 };
+    typeMap[w.workout_type].calories += w.calories_burned;
+    typeMap[w.workout_type].duration += w.duration;
+    typeMap[w.workout_type].count += 1;
   });
   const barData = Object.entries(typeMap).map(([type, d]) => ({ type, calories: d.calories, duration: d.duration }));
   const pieData = Object.entries(typeMap).map(([type, d]) => ({ name: type, value: d.count }));
@@ -101,7 +105,7 @@ const Workouts: React.FC = () => {
                 <form onSubmit={handleAdd} className="space-y-4">
                   <div>
                     <label className="mb-1.5 block text-sm font-medium text-foreground">Type</label>
-                    <select value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })} className={inputClass}>
+                    <select value={form.workout_type} onChange={(e) => setForm({ ...form, workout_type: e.target.value })} className={inputClass}>
                       {workoutTypes.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
@@ -202,15 +206,15 @@ const Workouts: React.FC = () => {
                       >
                         <div className="flex items-center gap-3">
                           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-lg">
-                            {w.type === "Running" ? "🏃" : w.type === "Weight Training" ? "🏋️" : w.type === "Yoga" ? "🧘" : w.type === "Swimming" ? "🏊" : w.type === "Cycling" ? "🚴" : "💪"}
+                            {w.workout_type === "Running" ? "🏃" : w.workout_type === "Weight Training" ? "🏋️" : w.workout_type === "Yoga" ? "🧘" : w.workout_type === "Swimming" ? "🏊" : w.workout_type === "Cycling" ? "🚴" : "💪"}
                           </div>
                           <div>
-                            <p className="font-medium text-foreground">{w.type}</p>
-                            <p className="text-sm text-muted-foreground">{new Date(w.date).toLocaleDateString()}</p>
+                            <p className="font-medium text-foreground">{w.workout_type}</p>
+                            <p className="text-sm text-muted-foreground">{new Date(w.created_at).toLocaleDateString()}</p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-foreground">{w.caloriesBurned} cal</p>
+                          <p className="font-semibold text-foreground">{w.calories_burned} cal</p>
                           <p className="text-sm text-muted-foreground">{w.duration} min</p>
                         </div>
                       </div>

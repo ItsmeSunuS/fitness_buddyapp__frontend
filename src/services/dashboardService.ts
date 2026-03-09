@@ -4,7 +4,7 @@ import api from "@/services/api";
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5050/api/dashboard",
+  baseURL: "http://localhost:5050",
 });
 
 API.interceptors.request.use((config) => {
@@ -16,6 +16,6 @@ API.interceptors.request.use((config) => {
 });
 
 export const getDashboardSummary = async () => {
-  const res = await API.get("/summary");
+  const res = await API.get("/api/dashboard/summary");
   return res.data;
 };

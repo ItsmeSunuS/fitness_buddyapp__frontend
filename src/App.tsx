@@ -14,6 +14,7 @@ import Groups from "./pages/Groups";
 import GymFinder from "./pages/GymFinder";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import Messages from "./pages/Messages";
 import RoleRedirect from "./pages/RoleRedirect";
 
 
@@ -32,6 +33,7 @@ const App = () => (
 <Route path="/workouts" element={<ProtectedRoute><Workouts /></ProtectedRoute>} />
 <Route path="/buddies" element={<ProtectedRoute><Buddies /></ProtectedRoute>} />
 <Route path="/challenges" element={<ProtectedRoute><Challenges /></ProtectedRoute>} />
+<Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
 <Route path="/groups" element={<ProtectedRoute><Groups /></ProtectedRoute>} />
 <Route path="/gym-finder" element={<ProtectedRoute><GymFinder /></ProtectedRoute>} />
 

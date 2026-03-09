@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import FitnessCard from "@/components/FitnessCard";
+import { getNearbyGyms } from "@/services/gymService";
+
 
 interface Gym {
   id: string;
@@ -13,19 +15,19 @@ interface Gym {
 
 // Mock gym data
 const mockGyms: Record<string, Gym[]> = {
-  "new york": [
-    { id: "1", name: "Iron Fitness NYC", address: "123 Broadway, New York, NY", rating: 4.8, distance: "0.5 mi", hours: "5AM - 11PM" },
-    { id: "2", name: "Equinox Hudson Yards", address: "35 Hudson Yards, New York, NY", rating: 4.9, distance: "1.2 mi", hours: "5AM - 10PM" },
-    { id: "3", name: "Planet Fitness Midtown", address: "456 5th Ave, New York, NY", rating: 4.3, distance: "0.8 mi", hours: "24/7" },
+  "Chennai": [
+    { id: "1", name: "Iron Fitness NYC", address: "Anna Nagar, Chennai", rating: 4.8, distance: "0.5 mi", hours: "5AM - 11PM" },
+    { id: "2", name: "Equinox Hudson Yards", address: "Buzz Street Banglore", rating: 4.9, distance: "1.2 mi", hours: "5AM - 10PM" },
+    { id: "3", name: "Planet Fitness Midtown", address: "Trivandrum Kerala", rating: 4.3, distance: "0.8 mi", hours: "24/7" },
   ],
-  "los angeles": [
-    { id: "4", name: "Gold's Gym Venice", address: "360 Hampton Dr, Venice, CA", rating: 4.7, distance: "0.3 mi", hours: "4AM - 12AM" },
-    { id: "5", name: "Barry's Bootcamp", address: "616 N Robertson, West Hollywood, CA", rating: 4.6, distance: "1.5 mi", hours: "6AM - 9PM" },
+  "Kerala": [
+    { id: "4", name: "Gold's Gym Venice", address: "Kerala", rating: 4.7, distance: "0.3 mi", hours: "4AM - 12AM" },
+    { id: "5", name: "Barry's Bootcamp", address: "Kerala, CA", rating: 4.6, distance: "1.5 mi", hours: "6AM - 9PM" },
   ],
   default: [
-    { id: "6", name: "FitLife Gym", address: "100 Main Street", rating: 4.5, distance: "0.7 mi", hours: "6AM - 10PM" },
-    { id: "7", name: "PowerHouse Fitness", address: "200 Park Avenue", rating: 4.4, distance: "1.0 mi", hours: "5AM - 11PM" },
-    { id: "8", name: "CrossFit Box", address: "300 Oak Street", rating: 4.6, distance: "1.3 mi", hours: "6AM - 9PM" },
+    { id: "6", name: "FitLife Gym", address: "Banglore", rating: 4.5, distance: "0.7 mi", hours: "6AM - 10PM" },
+    { id: "7", name: "PowerHouse Fitness", address: "Chennai", rating: 4.4, distance: "1.0 mi", hours: "5AM - 11PM" },
+    { id: "8", name: "CrossFit Box", address: "Kerala", rating: 4.6, distance: "1.3 mi", hours: "6AM - 9PM" },
   ],
 };
 
@@ -34,12 +36,18 @@ const GymFinder: React.FC = () => {
   const [results, setResults] = useState<Gym[]>([]);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    const key = query.toLowerCase().trim();
-    setResults(mockGyms[key] || mockGyms["default"]);
-    setSearched(true);
-  };
+ const handleSearch = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const gyms = await getNearbyGyms(query);
+    setResults(gyms);
+  } catch (err) {
+    console.error("Error fetching gyms", err);
+  }
+
+  setSearched(true);
+};
 
   const renderStars = (rating: number) => {
     const full = Math.floor(rating);

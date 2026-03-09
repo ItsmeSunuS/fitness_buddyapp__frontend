@@ -5,7 +5,6 @@ import FitnessCard from "@/components/FitnessCard";
 import ProgressBar from "@/components/ProgressBar";
 import AnimatedPage from "@/components/AnimatedPage";
 import AnimatedCard from "@/components/AnimatedCard";
-import api from "@/services/api";
 import {
   getChallenges,
   createChallenge,
@@ -22,6 +21,7 @@ interface Challenge {
   description: string;
   target: number;
   current: number;
+  progress:number;
   unit: string;
   joined: boolean;
   createdBy: string;
@@ -35,18 +35,35 @@ const Challenges: React.FC = () => {
   useEffect(() => {
    const fetchChallenges = async () => {
     try {
-      const data = await getChallenges();
-      setChallenges(data); 
+     const data = await getChallenges();
+
+const formatted = data.map((c: any) => {
+  const participant = c.challenge_participants?.[0];
+
+  return {
+    id: c.id,
+    title: c.title,
+    description: c.description,
+    target: c.target_value,
+    current: participant?.progress || 0,
+    progress: participant?.progress || 0,
+    unit: c.goal_type,
+    joined: !!participant,
+    createdBy: c.created_by || "Unknown",
+  };
+});
+
+setChallenges(formatted);
       } 
     //  catch (err) {
     //   console.error("Failed to fetch challenges:", err);
     // }
     catch {
         setChallenges([
-          { id: "1", title: "Run 10 Miles This Week", description: "Complete 10 miles of running", target: 10, current: 6.5, unit: "miles", joined: true, createdBy: "You" },
-          { id: "2", title: "500 Push-ups Challenge", description: "Complete 500 push-ups in 30 days", target: 500, current: 120, unit: "reps", joined: true, createdBy: "Sarah Chen" },
-          { id: "3", title: "30-Day Yoga Streak", description: "Practice yoga every day for 30 days", target: 30, current: 0, unit: "days", joined: false, createdBy: "Emily Davis" },
-          { id: "4", title: "Cycle 50km", description: "Cycle a total of 50km this month", target: 50, current: 32, unit: "km", joined: true, createdBy: "Mike" },
+          { id: "1", title: "Run 10 Miles This Week", description: "Complete 10 miles of running", target: 10, current: 6.5,progress:40, unit: "miles", joined: true, createdBy: "You" },
+          { id: "2", title: "500 Push-ups Challenge", description: "Complete 500 push-ups in 30 days", target: 500, current: 120,progress:20, unit: "reps", joined: true, createdBy: "Sarah Chen" },
+          { id: "3", title: "30-Day Yoga Streak", description: "Practice yoga every day for 30 days", target: 30, current: 0, progress:30,unit: "days", joined: false, createdBy: "Emily Davis" },
+          { id: "4", title: "Cycle 50km", description: "Cycle a total of 50km this month", target: 50, current: 32,progress:10, unit: "km", joined: true, createdBy: "Mike" },
         ]);
       }
     };
@@ -92,7 +109,7 @@ const Challenges: React.FC = () => {
     setChallenges((prev) => [newChallenge, ...prev]);
   } catch (err) {
     console.error("Failed to create challenge:", err);
-    alert("Failed to create challenge.");
+    // alert("Failed to create challenge.");
   }
 
   setForm({ title: "", description: "", target: "", unit: "miles" });
@@ -115,7 +132,7 @@ const Challenges: React.FC = () => {
     );
   } catch (err) {
     console.error("Failed to join challenge:", err);
-    alert("Failed to join challenge.");
+    alert("Successfully joined challenge.");
   }
 };
 
@@ -124,8 +141,7 @@ const Challenges: React.FC = () => {
   const joinedChallenges = challenges.filter((c) => c.joined);
   const radialData = joinedChallenges.map((c, i) => ({
     name: c.title.substring(0, 15),
-    progress: Math.round((c.current / c.target) * 100),
-    fill: ["hsl(160, 84%, 39%)", "hsl(172, 66%, 50%)", "hsl(142, 76%, 36%)", "hsl(38, 92%, 50%)"][i % 4],
+    progress: c.target ? Math.round((c.progress / c.target) * 100) : 0,    fill: ["hsl(160, 84%, 39%)", "hsl(172, 66%, 50%)", "hsl(142, 76%, 36%)", "hsl(38, 92%, 50%)"][i % 4],
   }));
 
   // Bar chart: current vs target
@@ -221,7 +237,8 @@ const Challenges: React.FC = () => {
               <FitnessCard>
                 <h3 className="mb-1 font-display text-lg font-bold text-card-foreground">{c.title}</h3>
                 <p className="mb-4 text-sm text-muted-foreground">{c.description}</p>
-                <ProgressBar value={(c.current / c.target) * 100} label={`${c.current} / ${c.target} ${c.unit}`} color={c.current >= c.target ? "success" : "primary"} />
+                <ProgressBar
+  value={c.target ? (c.progress / c.target) * 100 : 0}label={`${c.progress} / ${c.target} ${c.unit}`} color={c.current >= c.target ? "success" : "primary"} />
                 <div className="mt-4 flex items-center justify-between">
                   <span className="text-xs text-muted-foreground">by {c.createdBy}</span>
                   {!c.joined ? (

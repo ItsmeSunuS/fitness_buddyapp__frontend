@@ -33,6 +33,7 @@ const FitnessCard: React.FC<FitnessCardProps> = ({ title, subtitle, icon, childr
       {children}
     </motion.div>
   );
+  
 };
 
 export default FitnessCard;

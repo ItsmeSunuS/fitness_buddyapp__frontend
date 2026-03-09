@@ -1,16 +1,23 @@
 import api from "./api";
 
-export const getChallenges = async () => {
-  const res = await api.get("/api/challenges");
+export const createGroup = async (data:any) => {
+  const res = await api.post("/api/groups/create", data);
   return res.data;
 };
 
-export const createChallenge = async (data: any) => {
-  const res = await api.post("/api/challenges", data);
+export const joinGroup = async (id:string) => {
+  const res = await api.post(`/api/groups/join/${id}`);
   return res.data;
 };
 
-export const joinChallenge = async (id: string) => {
-  const res = await api.put(`/api/challenges/${id}/join`);
+export const getGroup = async (id:string) => {
+  const res = await api.get(`/api/groups/${id}`);
+  return res.data;
+};
+
+export const updateProgress = async (id:string, progress:number) => {
+  const res = await api.post(`/api/groups/progress/${id}`, {
+    progress
+  });
   return res.data;
 };

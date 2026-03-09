@@ -7,6 +7,7 @@ import AnimatedPage from "@/components/AnimatedPage";
 import AnimatedCard from "@/components/AnimatedCard";
 import CountUp from "@/components/CountUp";
 import api from "@/services/api";
+import { joinGroup, updateProgress, getGroup,createGroup  } from "@/services/groupService";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
@@ -34,12 +35,22 @@ const Groups: React.FC = () => {
   const [groups, setGroups] = useState<Group[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState<any>(null);
 
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await api.get("/api/groups");
-        setGroups(res.data);
+        const res = await api.get("/api/groups")
+
+const formatted = res.data.map((g: any) => ({
+  id: g.id,
+  name: g.name,
+  weeklyGoal: g.weekly_goal || 5000,
+  totalCalories: g.total_calories || 0,
+  members: g.members || []
+}))
+
+setGroups(formatted)
       } catch {
         setGroups([
           {
@@ -76,8 +87,14 @@ const Groups: React.FC = () => {
       weeklyGoal: 5000,
     };
     try {
-      const res = await api.post("/api/groups", { name: newGroupName });
-      setGroups([res.data, ...groups]);
+      const res = await api.post("/api/groups/create", {
+  name: newGroupName,
+  description: "",
+  goalType: "calories",
+  targetValue: 5000,
+  startDate: new Date(),
+  endDate: new Date()
+});
     } catch {
       setGroups([newGroup, ...groups]);
     }
@@ -85,12 +102,42 @@ const Groups: React.FC = () => {
     setShowCreate(false);
   };
 
+  const handleJoin = async (groupId: string) => {
+  try {
+    await joinGroup(groupId);
+    alert("Joined group successfully!");
+  } catch (err) {
+    alert("Could not join group");
+  }
+};
+
+const viewGroup = async (groupId: string) => {
+  try {
+    const group = await getGroup(groupId);
+    setSelectedGroup(group);   // save group details
+  } catch (err) {
+    console.error("Failed to load group");
+  }
+};
   // Aggregated stats for overview chart
   const overviewBarData = groups.map((g) => ({
     name: g.name,
     burned: g.totalCalories,
     goal: g.weeklyGoal,
   }));
+
+  const handleProgress = async (groupId: string) => {
+  const amount = prompt("Enter calories burned:");
+
+  if (!amount) return;
+
+  try {
+    await updateProgress(groupId, Number(amount));
+    alert("Progress updated!");
+  } catch {
+    alert("Failed to update progress");
+  }
+};
 
   return (
     <DashboardLayout>
@@ -121,7 +168,8 @@ const Groups: React.FC = () => {
                   <input value={newGroupName} onChange={(e) => setNewGroupName(e.target.value)} required
                     className="flex-1 rounded-xl border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/20 transition-theme"
                     placeholder="Group name (3-5 members)" />
-                  <button type="submit" className="rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90">Create</button>
+                 
+                 <button type="submit" className="rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground hover:opacity-90">Create</button>
                 </form>
               </FitnessCard>
             </motion.div>
@@ -162,10 +210,23 @@ const Groups: React.FC = () => {
                     size="lg"
                     color="accent"
                   />
-
+                  <button onClick={() => handleProgress(group.id)} className="mt-2 rounded-lg bg-green-500 px-4 py-2 text-white">Add Progress</button>
+                  <button onClick={() => handleJoin(group.id)}className="mt-3 rounded-lg bg-blue-500 px-4 py-2 text-white">Join Group</button>
+                  <button onClick={() => viewGroup(group.id)}className="rounded-lg bg-purple-500 px-3 py-2 text-white mt-2">View Details</button>
                   {/* Member pie chart */}
                   <div className="mt-4 flex items-center">
                     <div className="h-40 w-1/2">
+                    {selectedGroup?.id === group.id && (
+  <FitnessCard className="mt-4">
+    <h2 className="text-xl font-bold">{selectedGroup.name}</h2>
+    <p>{selectedGroup.description}</p>
+
+    <p><b>Goal:</b> {selectedGroup.goal_type}</p>
+    <p><b>Target:</b> {selectedGroup.target_value}</p>
+    <p><b>Start:</b> {selectedGroup.start_date}</p>
+    <p><b>End:</b> {selectedGroup.end_date}</p>
+  </FitnessCard>
+)}
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                           <Pie data={pieData} cx="50%" cy="50%" innerRadius={30} outerRadius={55} paddingAngle={3} dataKey="value" animationDuration={1200}>

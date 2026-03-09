@@ -5,12 +5,12 @@ export const getChallenges = async () => {
   return res.data;
 };
 
-export const createChallenge = async (data: any) => {
-  const res = await api.post("/api/challenges", data);
+export const createChallenge = async (data:any) => {
+  const res = await api.post("/api/challenges/create", data);
   return res.data;
 };
 
-export const joinChallenge = async (id: string) => {
-  const res = await api.put(`/api/challenges/${id}/join`);
+export const joinChallenge = async (id:string) => {
+  const res = await api.post(`/api/challenges/join/${id}`);
   return res.data;
 };
