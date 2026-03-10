@@ -79,6 +79,7 @@ const Dashboard: React.FC = () => {
           api.get("/api/buddies"),
           api.get("/api/challenges"),
           api.get("/api/groups"),
+          api.get("/api/getGyms"),
         ]);
         if (wRes.status === "fulfilled") setWorkouts(wRes.value.data);
         if (bRes.status === "fulfilled") setBuddies(bRes.value.data);
