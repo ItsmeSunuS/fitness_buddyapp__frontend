@@ -3,12 +3,12 @@
 import api from "@/services/api";
 import axios from "axios";
 
-const API = axios.create({
-  // baseURL: "http://localhost:5050",
-   baseURL: "https://buddy-backend-8tfx.onrender.com",
-});
+// const API = axios.create({
+//   // baseURL: "http://localhost:5050",
+//    baseURL: "https://buddy-backend-8tfx.onrender.com",
+// });
 
-API.interceptors.request.use((config) => {
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -17,6 +17,6 @@ API.interceptors.request.use((config) => {
 });
 
 export const getDashboardSummary = async () => {
-  const res = await API.get("/api/dashboard/summary");
+  const res = await api.get("/api/dashboard/summary");
   return res.data;
 };
