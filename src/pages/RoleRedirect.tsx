@@ -8,7 +8,7 @@ const RoleRedirect = () => {
     return <Navigate to="/admin" replace />;
   }
 
-  return <Navigate to="/dashboard-summary" replace />;
+  return <Navigate to="/dashboard" replace />;
 };
 
 export default RoleRedirect;
