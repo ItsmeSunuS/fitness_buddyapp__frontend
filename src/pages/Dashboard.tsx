@@ -76,10 +76,11 @@ const Dashboard: React.FC = () => {
 
         const [wRes, bRes, cRes, gRes] = await Promise.allSettled([
           api.get("/api/workouts"),
-          api.get("/api/buddies"),
+          api.get("/api/users/my-buddies"),
           api.get("/api/challenges"),
           api.get("/api/groups"),
-          api.get("/api/getGyms"),
+          api.get("/api/gyms"),
+          api.get("/api/messages")
         ]);
         if (wRes.status === "fulfilled") setWorkouts(wRes.value.data);
         if (bRes.status === "fulfilled") setBuddies(bRes.value.data);
