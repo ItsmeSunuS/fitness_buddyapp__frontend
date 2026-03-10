@@ -1,5 +1,5 @@
 // import React, { useState } from "react";
-// import { useAuth } from "@/context/AuthContext";
+//  import { useAuth } from "@/context/AuthContext";
 // import { useTheme } from "@/context/ThemeContext";
 
 
@@ -576,6 +576,8 @@
 // export default AdminDashboard;
 
 import React, { useState, useEffect, useCallback } from "react";
+ import { useAuth } from "@/context/AuthContext";
+
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, Legend,
@@ -711,6 +713,8 @@ const AdminDashboard: React.FC = () => {
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [groups, setGroups] = useState<Group[]>([]);
+  const { user, logout, isAdmin } = useAuth();
+
   const [signupData, setSignupData] = useState<{ month: string; users: number }[]>([]);
 
   // Loading / error per section
@@ -899,6 +903,11 @@ const AdminDashboard: React.FC = () => {
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
             <span className="text-xs text-muted-foreground">Live</span>
+            <button
+            onClick={logout}
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive hover:text-destructive-foreground">
+           Logout
+             </button>
           </div>
         </div>
       </div>
