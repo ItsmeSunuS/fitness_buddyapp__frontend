@@ -5,6 +5,7 @@ import FitnessCard from "@/components/FitnessCard";
 import ProgressBar from "@/components/ProgressBar";
 import AnimatedPage from "@/components/AnimatedPage";
 import AnimatedCard from "@/components/AnimatedCard";
+import { toast } from "react-toastify";
 import {
   getChallenges,
   createChallenge,
@@ -109,7 +110,7 @@ setChallenges(formatted);
     setChallenges((prev) => [newChallenge, ...prev]);
   } catch (err) {
     console.error("Failed to create challenge:", err);
-    // alert("Failed to create challenge.");
+    // toast.error("Failed to create challenge.");
   }
 
   setForm({ title: "", description: "", target: "", unit: "miles" });
@@ -132,7 +133,7 @@ setChallenges(formatted);
     );
   } catch (err) {
     console.error("Failed to join challenge:", err);
-    alert("Successfully joined challenge.");
+    toast.success("Successfully joined challenge.");
   }
 };
 

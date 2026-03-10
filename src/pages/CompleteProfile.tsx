@@ -52,7 +52,7 @@ const CompleteProfile: React.FC = () => {
       "Profile update error:",
       err.response?.data || err.message
     );
-    // alert(err.response?.data?.error || "Failed to update profile.");
+    // toast.error(err.response?.data?.error || "Failed to update profile.");
   } finally {
     setLoading(false);
   }
@@ -80,7 +80,7 @@ const CompleteProfile: React.FC = () => {
 //     navigate("/dashboard");
 //   } catch (err: any) {
 //     console.log("Profile update error:", err.response?.data || err.message);
-//     alert(err.response?.data?.error || "Failed to update profile.");
+//     toast.error(err.response?.data?.error || "Failed to update profile.");
 //   } finally {
 //     setLoading(false);
 //   }
@@ -97,7 +97,7 @@ const CompleteProfile: React.FC = () => {
 //   navigate("/dashboard");
 // } catch (err: any) {
 //   console.log("Profile update error:", err.response?.data || err.message);
-//   alert(err.response?.data?.error || "Failed to update profile.");
+//   toast.error(err.response?.data?.error || "Failed to update profile.");
 // } finally {
 //   setLoading(false);
 // };

@@ -578,6 +578,7 @@
 import React, { useState, useEffect, useCallback } from "react";
  import { useAuth } from "@/context/AuthContext";
  import { useTheme } from "@/context/ThemeContext";
+ import { toast } from "react-toastify";
 
 
 import {
@@ -830,7 +831,7 @@ const AdminDashboard: React.FC = () => {
       await apiDelete(`/api/admin/users/${id}`);
       setUsers(u => u.filter(x => x.id !== id));
       setSummary(s => s ? { ...s, totalUsers: s.totalUsers - 1 } : s);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) { toast.success(e.message); }
   };
 
   const deleteGym = async (id: string) => {
@@ -839,7 +840,7 @@ const AdminDashboard: React.FC = () => {
       await apiDelete(`/api/admin/gyms/${id}`);
       setGyms(g => g.filter(x => x.id !== id));
       setSummary(s => s ? { ...s, totalGyms: s.totalGyms - 1 } : s);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) { toast.success(e.message); }
   };
 
   const deleteChallenge = async (id: string) => {
@@ -848,7 +849,7 @@ const AdminDashboard: React.FC = () => {
       await apiDelete(`/api/admin/challenges/${id}`);
       setChallenges(c => c.filter(x => x.id !== id));
       setSummary(s => s ? { ...s, totalChallenges: s.totalChallenges - 1 } : s);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) { toast.success(e.message); }
   };
 
   const deleteGroup = async (id: string) => {
@@ -857,7 +858,7 @@ const AdminDashboard: React.FC = () => {
       await apiDelete(`/api/admin/groups/${id}`);
       setGroups(g => g.filter(x => x.id !== id));
       setSummary(s => s ? { ...s, totalGroups: s.totalGroups - 1 } : s);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) { toast.success(e.message); }
   };
 
   const addGym = async () => {
@@ -869,7 +870,7 @@ const AdminDashboard: React.FC = () => {
       setSummary(s => s ? { ...s, totalGyms: s.totalGyms + 1 } : s);
       setNewGym({ name: "", city: "", address: "" });
       setShowAddGym(false);
-    } catch (e: any) { alert(e.message); }
+    } catch (e: any) { toast.success(e.message); }
     setAddingGym(false);
   };
 

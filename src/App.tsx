@@ -16,7 +16,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import Messages from "./pages/Messages";
 import RoleRedirect from "./pages/RoleRedirect";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => (
   <ThemeProvider>
@@ -49,6 +50,8 @@ const App = () => (
           {/* Protected routes */}
          
         </Routes>
+                <ToastContainer position="top-right" autoClose={3000} />
+
       </BrowserRouter>
     </AuthProvider>
   </ThemeProvider>
