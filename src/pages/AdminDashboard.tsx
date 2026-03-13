@@ -579,7 +579,7 @@ import React, { useState, useEffect, useCallback } from "react";
  import { useAuth } from "@/context/AuthContext";
  import { useTheme } from "@/context/ThemeContext";
  import { toast } from "react-toastify";
-
+ import Swal from "sweetalert2";
 
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -588,6 +588,17 @@ import {
 
 import api from "@/services/api";
 
+const confirmDelete = async (message: string) => {
+  const result = await Swal.fire({
+    title: message,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, delete",
+    cancelButtonText: "Cancel",
+  });
+
+  return result.isConfirmed;
+};
 // ─── Config ───────────────────────────────────────────────────────────────────
 const CHART_COLORS = [
   "hsl(185,85%,48%)", "hsl(258,78%,68%)", "hsl(142,70%,45%)",
@@ -825,41 +836,96 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   // ── Actions ───────────────────────────────────────────────────────────────
+  // const deleteUser = async (id: string) => {
+  //   if (!confirm("Delete this user?")) return;
+  //   try {
+  //     await apiDelete(`/api/admin/users/${id}`);
+  //     setUsers(u => u.filter(x => x.id !== id));
+  //     setSummary(s => s ? { ...s, totalUsers: s.totalUsers - 1 } : s);
+  //   } catch (e: any) { toast.success(e.message); }
+  // };
+  
   const deleteUser = async (id: string) => {
-    if (!confirm("Delete this user?")) return;
-    try {
-      await apiDelete(`/api/admin/users/${id}`);
-      setUsers(u => u.filter(x => x.id !== id));
-      setSummary(s => s ? { ...s, totalUsers: s.totalUsers - 1 } : s);
-    } catch (e: any) { toast.success(e.message); }
-  };
 
-  const deleteGym = async (id: string) => {
-    if (!confirm("Delete this gym?")) return;
-    try {
-      await apiDelete(`/api/admin/gyms/${id}`);
-      setGyms(g => g.filter(x => x.id !== id));
-      setSummary(s => s ? { ...s, totalGyms: s.totalGyms - 1 } : s);
-    } catch (e: any) { toast.success(e.message); }
-  };
+  if (!(await confirmDelete("Delete this user?"))) return;
 
-  const deleteChallenge = async (id: string) => {
-    if (!confirm("Delete this challenge?")) return;
-    try {
-      await apiDelete(`/api/admin/challenges/${id}`);
-      setChallenges(c => c.filter(x => x.id !== id));
-      setSummary(s => s ? { ...s, totalChallenges: s.totalChallenges - 1 } : s);
-    } catch (e: any) { toast.success(e.message); }
-  };
+  try {
+    await apiDelete(`/api/admin/users/${id}`);
 
-  const deleteGroup = async (id: string) => {
-    if (!confirm("Delete this group?")) return;
-    try {
-      await apiDelete(`/api/admin/groups/${id}`);
-      setGroups(g => g.filter(x => x.id !== id));
-      setSummary(s => s ? { ...s, totalGroups: s.totalGroups - 1 } : s);
-    } catch (e: any) { toast.success(e.message); }
-  };
+    setUsers(u => u.filter(x => x.id !== id));
+
+    setSummary(s =>
+      s ? { ...s, totalUsers: s.totalUsers - 1 } : s
+    );
+
+    toast.success("User deleted successfully");
+
+  } catch (e: any) {
+    toast.error(e.message);
+  }
+};
+
+
+const deleteGym = async (id: string) => {
+
+  if (!(await confirmDelete("Delete this gym?"))) return;
+
+  try {
+    await apiDelete(`/api/admin/gyms/${id}`);
+
+    setGyms(g => g.filter(x => x.id !== id));
+
+    setSummary(s =>
+      s ? { ...s, totalGyms: s.totalGyms - 1 } : s
+    );
+
+    toast.success("Gym deleted successfully");
+
+  } catch (e: any) {
+    toast.error(e.message);
+  }
+};
+
+const deleteChallenge = async (id: string) => {
+
+  if (!(await confirmDelete("Delete this challenge?"))) return;
+
+  try {
+    await apiDelete(`/api/admin/challenges/${id}`);
+
+    setChallenges(c => c.filter(x => x.id !== id));
+
+    setSummary(s =>
+      s ? { ...s, totalChallenges: s.totalChallenges - 1 } : s
+    );
+
+    toast.success("Challenge deleted successfully");
+
+  } catch (e: any) {
+    toast.error(e.message);
+  }
+};
+
+
+ const deleteGroup = async (id: string) => {
+
+  if (!(await confirmDelete("Delete this group?"))) return;
+
+  try {
+    await apiDelete(`/api/admin/groups/${id}`);
+
+    setGroups(g => g.filter(x => x.id !== id));
+
+    setSummary(s =>
+      s ? { ...s, totalGroups: s.totalGroups - 1 } : s
+    );
+
+    toast.success("Group deleted successfully");
+
+  } catch (e: any) {
+    toast.error(e.message);
+  }
+};
 
   const addGym = async () => {
     if (!newGym.name || !newGym.city) return;
@@ -870,7 +936,7 @@ const AdminDashboard: React.FC = () => {
       setSummary(s => s ? { ...s, totalGyms: s.totalGyms + 1 } : s);
       setNewGym({ name: "", city: "", address: "" });
       setShowAddGym(false);
-    } catch (e: any) { toast.success(e.message); }
+    } catch (e: any) { toast.error(e.message); }
     setAddingGym(false);
   };
 
